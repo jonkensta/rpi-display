@@ -14,7 +14,7 @@ class DigitalClock(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.setMinimumSize(QSize(640, 480))
+        self.setMinimumSize(QSize(480, 320))
         self.setWindowTitle("Hello world")
 
         timer = QTimer(self)
@@ -27,16 +27,9 @@ class DigitalClock(QMainWindow):
         gridLayout = QGridLayout(self)
         centralWidget.setLayout(gridLayout)
 
-        font = QFont('DSEG7 Classic', 120)
-
-        bg = QLabel("88:88:88", self)
-        bg.setAlignment(QtCore.Qt.AlignCenter)
-        bg.setFont(font)
-        bg.setStyleSheet("color: rgba(0,0,0,10%)")
-        gridLayout.addWidget(bg, 0, 0)
-
         title = QLabel("", self)
         title.setAlignment(QtCore.Qt.AlignCenter)
+        font = QFont('DSEG7 Classic', 50)
         title.setFont(font)
         gridLayout.addWidget(title, 0, 0)
 

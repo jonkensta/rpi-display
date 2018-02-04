@@ -1,13 +1,19 @@
 import operator
 from random import randint
 
-import ipdb
 import pyglet
 import pyglet.image
 
 
-BLACK = (0, 0, 0, 0)
-WHITE = (255, 255, 255, 0)
+pyglet.font.add_file('DSEG14Classic-Regular.ttf')
+font = pyglet.font.load('DSEG14 Classic', bold=True)
+
+
+BLACK = (0, 0, 0, 255)
+GREEN = (0, 255, 0, 255)
+WHITE = (255, 255, 255, 255)
+YELLOW = (255, 255, 0, 255)
+RED = (255, 0, 0, 255)
 
 
 def build_box(x, y, w, h, c):
@@ -26,51 +32,64 @@ def build_box(x, y, w, h, c):
     )
 
 
-class BarBuilder(object):
+class MeterTape(object):
 
-    def __init__(self, width=500, height=50):
+    def __init__(self, x, y, width=480, height=50):
+        self._x, self._y = x, y
         self._width, self._height = int(width), int(height)
         self._percentage = 0.
 
-    def __call__(self, x, y, percentage):
-        percentage = max(0., min(100., float(percentage)))
-        percentage /= 100
+    @property
+    def percentage(self):
+        return self._percentage
 
-        w0 = float(self._width) * percentage
+    @percentage.setter
+    def percentage(self, value):
+        self._percentage = max(0., min(100., float(value)))
+
+    def draw(self):
+        fraction = self._percentage / 100
+
+        x, y = self._x, self._y
+        w = 0
         h = float(self._height)
-        pyglet.graphics.draw(*build_box(x, y, w0, h, BLACK))
 
-        w1 = float(self._width) - w0
-        pyglet.graphics.draw(*build_box(x + w0, y, w1, h, WHITE))
+        w0 = float(self._width) * min(fraction, 0.675)
+        pyglet.graphics.draw(*build_box(x, y, w0, h, GREEN))
 
+        w += w0
+        w1 = float(self._width) * (min(0.875, max(fraction, 0.675)) - 0.675)
+        pyglet.graphics.draw(*build_box(x + w, y, w1, h, YELLOW))
 
-percentage = 50
+        w += w1
+        w2 = float(self._width) * (max(fraction, 0.875) - 0.875)
+        pyglet.graphics.draw(*build_box(x + w, y, w2, h, RED))
+
+        w += w2
+        w3 = float(self._width) - w
+        pyglet.graphics.draw(*build_box(x + w, y, w3, h, WHITE))
 
 
 def main():
-    width, height = 500, 500
+    width, height = 480, 320
     window = pyglet.window.Window(width=width, height=height)
+    image = pyglet.image.load('display.png')
 
-    background = (
-        pyglet.image
-        .SolidColorImagePattern(WHITE)
-        .create_image(width, height)
-    )
-
-    bar = BarBuilder()
+    meter0 = MeterTape(173,  39, 274, 8)
+    meter1 = MeterTape(173, 191, 274, 8)
 
     @window.event
     def on_draw():
         window.clear()
-        background.blit(0, 0)
-        bar(0, 0, percentage)
+        image.blit(0, 0)
+        meter0.draw()
+        meter1.draw()
 
     def update(*args):
-        global percentage
-        percentage = percentage + randint(-5, 5)
-        percentage = max(0., min(100., float(percentage)))
+        meter0.percentage += randint(-5, 5)
+        meter1.percentage += randint(-5, 5)
 
-    pyglet.clock.schedule_interval(update, 0.5)
+    pyglet.clock.schedule_interval(update, 0.1)
     pyglet.app.run()
 
 
