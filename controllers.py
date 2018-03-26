@@ -181,4 +181,27 @@ class SerialInput(object):
         self._kwargs = kwargs
 
     def __call__(self):
-        pass
+        with serial.Serial(*self._args, **self._kwargs) as sio:
+            while not self._stop.is_set():
+                input_ = sio.readline()
+
+                if input_ is None:
+                    self._channels[0].reset()
+                    self._channels[1].reset()
+                    continue
+
+                match = None
+                for regexp, callback in self._callbacks:
+                    match = regexp.match(input_)
+                    if match is not None:
+                        break
+
+                if match is not None:
+                    args = match.groups()
+                    output = callback(*args)
+
+                    if output is not None:
+                        print('\n'.join(output))
+
+                else:
+                    return
