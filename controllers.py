@@ -30,15 +30,17 @@ def build_commands(channels):
         return ['0.1', 'OK']
 
     @register_command(r'F([ +-])( [0-9]{9}|1[0-9]{9})')
-    def display_main_freq(s, GMMMKKKhhh):
+    def display_main_freq(sign, GMMMKKKhhh):
         f = float(GMMMKKKhhh) / 1e6
+        channels[0].sign = sign
         channels[0].frequency = f
         return ['OK']
 
     @register_command(r'f([ +-])( [0-9]{9}|1[0-9]{9})')
-    def display_sub_freq(s, GMMMKKKhhh):
+    def display_sub_freq(sign, GMMMKKKhhh):
         f = float(GMMMKKKhhh) / 1e6
-        channels[0].frequency = f
+        channels[1].sign = sign
+        channels[1].frequency = f
         return ['OK']
 
     @register_command(r'S([TR0])')
@@ -139,44 +141,47 @@ def build_commands(channels):
     return callbacks
 
 
+class CommandExecutor(object):
+
+    def __init__(self, channels):
+        self._channels = channels
+        self._callbacks = build_commands(channels)
+
+    def __call__(self, input_):
+        if input_ is None:
+            self._channels[0].reset()
+            self._channels[1].reset()
+            return
+
+        match = None
+        for regexp, callback in self._callbacks:
+            match = regexp.match(input_)
+            if match is not None:
+                break
+
+        if match is not None:
+            args = match.groups()
+            return callback(*args)
+
+
 class KeyboardInput(object):
 
     def __init__(self, channels, stop):
         self._stop = stop
-        self._channels = channels
-        self._callbacks = build_commands(channels)
+        self._execute_command = CommandExecutor(channels)
 
     def __call__(self):
         while not self._stop.is_set():
             input_ = raw_input()  # noqa
-
-            if input_ is None:
-                self._channels[0].reset()
-                self._channels[1].reset()
-                continue
-
-            match = None
-            for regexp, callback in self._callbacks:
-                match = regexp.match(input_)
-                if match is not None:
-                    break
-
-            if match is not None:
-                args = match.groups()
-                output = callback(*args)
-
-                if output is not None:
-                    print('\n'.join(output))
-
-            else:
-                return
+            output = self._execute_command(input_)
+            print('\n'.join(output))
 
 
 class SerialInput(object):
 
     def __init__(self, channels, stop, *args, **kwargs):
         self._stop = stop
-        self._channels = channels
+        self._execute_command = CommandExecutor(channels)
         self._args = args
         self._kwargs = kwargs
 
@@ -184,24 +189,4 @@ class SerialInput(object):
         with serial.Serial(*self._args, **self._kwargs) as sio:
             while not self._stop.is_set():
                 input_ = sio.readline()
-
-                if input_ is None:
-                    self._channels[0].reset()
-                    self._channels[1].reset()
-                    continue
-
-                match = None
-                for regexp, callback in self._callbacks:
-                    match = regexp.match(input_)
-                    if match is not None:
-                        break
-
-                if match is not None:
-                    args = match.groups()
-                    output = callback(*args)
-
-                    if output is not None:
-                        print('\n'.join(output))
-
-                else:
-                    return
+                self._execute_command(input_)

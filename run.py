@@ -28,8 +28,8 @@ class SignalHandler:
 def main():
     channel_models = sharedctypes.Array(
         models.Channel, [
-            ('', 0, 0, 0, False, False, False, False, False),
-            ('', 0, 0, 0, False, False, False, False, False),
+            ('', 0, 0, ' ', 0, False, False, False, False, False),
+            ('', 0, 0, ' ', 0, False, False, False, False, False),
         ],
         lock=True
     )

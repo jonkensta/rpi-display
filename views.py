@@ -177,10 +177,12 @@ class ChannelFrequency(object):
         self._doc = doc
         self._layout = layout
 
-    def __call__(self, frequency):
-        self._doc.text = "{:.6f}".format(float(frequency)).rjust(11, '!')
-        self._doc.set_style(0,  8, LARGE_FONT)
-        self._doc.set_style(8, 12, SMALL_FONT)
+    def __call__(self, sign, frequency):
+        sign = '!' if sign == ' ' else sign
+        frequency_text = "{:011.6f}".format(float(frequency))
+        self._doc.text = sign + frequency_text
+        self._doc.set_style(0,  9, LARGE_FONT)
+        self._doc.set_style(9, 13, SMALL_FONT)
 
 
 led_images = {
@@ -280,16 +282,16 @@ class Channel(object):
         self._ctcss = CTCSSFrequency(batch, x=x, y=y+25, group=group)
         self._meter = MeterTape(batch, x=x+175, y=y+25, group=group)
 
-        self._tx_led = LED(batch, x=x+355, y=y+95, color='off', group=group)
+        self._tx_led = LED(batch, x=x+400, y=y+95, color='off', group=group)
         tx_label = pyglet.text.Label(
-            'T', x=x+380, y=y+100,
+            'T', x=x+425, y=y+100,
             batch=batch, anchor_y='center', group=group,
             **SMALL_FONT
         )
 
-        self._rx_led = LED(batch, x=x+355, y=y+65, color='off', group=group)
+        self._rx_led = LED(batch, x=x+400, y=y+65, color='off', group=group)
         rx_label = pyglet.text.Label(
-            'R', x=x+380, y=y+70,
+            'R', x=x+425, y=y+70,
             batch=batch, anchor_y='center', group=group,
             **SMALL_FONT
         )
@@ -305,7 +307,7 @@ class Channel(object):
         self._name(model.name)
         self._meter(model.meter)
         self._ctcss(model.ctcss)
-        self._freq(model.frequency)
+        self._freq(model.sign, model.frequency)
 
         self._encode_led('red' if model.encode else 'off')
         self._decode_led('green' if model.decode else 'off')
