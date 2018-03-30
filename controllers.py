@@ -136,7 +136,7 @@ def build_commands(channels):
 
     @register_command(r'.*')
     def otherwise():
-        return ['NOTOK']
+        return ['KO']
 
     return callbacks
 

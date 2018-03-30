@@ -50,7 +50,7 @@ def main():
         for view in channel_views:
             view.scroll()
 
-    pyglet.clock.schedule_interval(update, 1/60.0)
+    pyglet.clock.schedule_interval(update, 1.0/25)
 
     stop = threading.Event()
     controller = controllers.KeyboardInput(channel_models, stop)

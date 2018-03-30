@@ -1,48 +1,19 @@
 from __future__ import division
 
-import os
 import operator
 import functools
-import subprocess
-from StringIO import StringIO
 
 import pyglet
 import pyglet.image
 import numpy as np
 
+import fonts
+import images
+import colors
+
 
 pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-
-pyglet.font.add_file('DSEG14Classic-Regular.ttf')
-
-BLACK = (0, 0, 0, 255)
-WHITE = (255, 255, 255, 255)
-
-LARGE_FONT = {
-    'font_name': 'DSEG14 Classic',
-    'font_size': 36,
-    'bold': True,
-    'color': BLACK,
-}
-
-MEDIUM_FONT = {
-    'font_name': 'DSEG14 Classic',
-    'font_size': 32,
-    'bold': True,
-    'color': BLACK,
-}
-
-SMALL_FONT = {
-    'font_name': 'DSEG14 Classic',
-    'font_size': 22,
-    'bold': True,
-    'color': BLACK,
-}
-
-SPRITES = 'sprites'
-LED_IMAGE = os.path.join(SPRITES, 'led.xcf')
-METER_TAPE = os.path.join(SPRITES, 'meter_tape.xcf')
 
 
 def content_width(text, **kwargs):
@@ -61,27 +32,6 @@ def build_box(x, y, w, h, c, group=None):
         num_vertices, pyglet.gl.GL_POLYGON, group,
         ('v2f', vertices), ('c4B', colors)
     )
-
-
-class ImageReadFailed(Exception):
-    pass
-
-
-def read_image_layer(filepath, index):
-    index = int(index)
-
-    input_ = '\'{}[{}]\''.format(filepath, index)
-    cmd = ' '.join(['convert', input_, 'png:-'])
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-    p.wait()
-
-    if p.returncode != 0:
-        msg = "Failed to read image {}".format(input_)
-        raise ImageReadFailed(msg)
-
-    image_name = '{}_{}.png'.format(filepath, index)
-    output = StringIO(p.communicate()[0])
-    return pyglet.image.load(image_name, file=output)
 
 
 def img_horizontal_extents(image):
@@ -104,7 +54,7 @@ class ChannelName(object):
         doc = pyglet.text.document.UnformattedDocument()
         doc.text = '-'
 
-        h = pyglet.text.Label(" ", **SMALL_FONT).content_height
+        h = pyglet.text.Label(" ", **fonts.small).content_height
 
         Layout = pyglet.text.layout.ScrollableTextLayout
         layout = Layout(doc, w, h, batch=batch, **kwargs)
@@ -123,7 +73,7 @@ class ChannelName(object):
     def __call__(self, name):
         self._name = str(name)
         self._doc.text = self._name
-        cw = content_width(self._name, **SMALL_FONT)
+        cw = content_width(self._name, **fonts.small)
 
         if cw <= self._w:
             self._doc.text = self._name
@@ -131,11 +81,11 @@ class ChannelName(object):
 
         else:
             self._doc.text = ' ' + self._name + ' '
-            cw = content_width(self._doc.text, **SMALL_FONT)
+            cw = content_width(self._doc.text, **fonts.small)
             self._scroll_w = cw
             self._doc.text *= 2
 
-        self._doc.set_style(0, len(self._doc.text), SMALL_FONT)
+        self._doc.set_style(0, len(self._doc.text), fonts.small)
 
     def scroll(self):
         self._layout.view_x += self._rate
@@ -159,7 +109,7 @@ class CTCSSFrequency(object):
 
     def __call__(self, frequency):
         self._doc.text = "{:.1f}".format(float(frequency)).rjust(5, '!')
-        self._doc.set_style(0, 5, SMALL_FONT)
+        self._doc.set_style(0, 5, fonts.small)
 
 
 class ChannelFrequency(object):
@@ -181,16 +131,8 @@ class ChannelFrequency(object):
         sign = '!' if sign == ' ' else sign
         frequency_text = "{:011.6f}".format(float(frequency))
         self._doc.text = sign + frequency_text
-        self._doc.set_style(0,  9, LARGE_FONT)
-        self._doc.set_style(9, 13, SMALL_FONT)
-
-
-led_images = {
-    'off':    read_image_layer(LED_IMAGE, 0),
-    'red':    read_image_layer(LED_IMAGE, 1),
-    'yellow': read_image_layer(LED_IMAGE, 2),
-    'green':  read_image_layer(LED_IMAGE, 3),
-}
+        self._doc.set_style(0,  9, fonts.large)
+        self._doc.set_style(9, 13, fonts.small)
 
 
 class LED(object):
@@ -200,8 +142,8 @@ class LED(object):
 
         leds = {}
         Sprite = pyglet.sprite.Sprite
-        for c in led_images:
-            leds[c] = Sprite(led_images[c], **kwargs)
+        for c in images.led:
+            leds[c] = Sprite(images.led[c], **kwargs)
 
         led = leds[color]
         led.batch = batch
@@ -226,18 +168,15 @@ class MeterTape(object):
     def __init__(self, batch, group=None, **kwargs):
         color = str(kwargs.pop('color', 'black')).lower()
 
-        if color == 'white':
-            meter = read_image_layer(METER_TAPE, 1)
-        elif color == 'black':
-            meter = read_image_layer(METER_TAPE, 2)
-        else:
+        try:
+            meter = images.meter[color]
+        except KeyError:
             raise ValueError("Invalid color choice")
 
         self._bar_color = color
-
         Sprite = pyglet.sprite.Sprite
 
-        bar = read_image_layer(METER_TAPE, 0)
+        bar = images.meter['tape']
         extents = img_horizontal_extents(bar)
         self._bar_start, self._bar_stop = extents
 
@@ -267,7 +206,7 @@ class MeterTape(object):
         h = self._bar.height
 
         # background color is opposite of the bar color
-        c = WHITE if self._bar_color == 'black' else BLACK
+        c = colors.white if self._bar_color == 'black' else colors.black
         args = build_box(x, y, w, h, c, self._group)
         return self._batch.add(*args)
 
@@ -286,14 +225,14 @@ class Channel(object):
         tx_label = pyglet.text.Label(
             'T', x=x+425, y=y+100,
             batch=batch, anchor_y='center', group=group,
-            **SMALL_FONT
+            **fonts.small
         )
 
         self._rx_led = LED(batch, x=x+400, y=y+65, color='off', group=group)
         rx_label = pyglet.text.Label(
             'R', x=x+425, y=y+70,
             batch=batch, anchor_y='center', group=group,
-            **SMALL_FONT
+            **fonts.small
         )
 
         # Encode/Decode/(Decode detect) leds
