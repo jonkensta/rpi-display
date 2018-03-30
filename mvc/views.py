@@ -7,9 +7,9 @@ import pyglet
 import pyglet.image
 import numpy as np
 
-import fonts
-import images
-import colors
+from . import fonts
+from . import images
+from . import colors
 
 
 pyglet.gl.glEnable(pyglet.gl.GL_BLEND)

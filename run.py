@@ -1,13 +1,12 @@
 import sys
-import signal
 import threading
 from multiprocessing import sharedctypes
 
 import pyglet
 
-import views
-import models
-import controllers
+from mvc import views
+from mvc import models
+from mvc import controllers
 
 
 class SignalHandler:
