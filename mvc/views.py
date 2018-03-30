@@ -269,8 +269,7 @@ def build():
     )
 
     bg = pyglet.sprite.Sprite(
-        pyglet.image.load('background.png'),
-        group=groups[0], batch=batch
+        images.background, group=groups[0], batch=batch
     )
 
     channels = (

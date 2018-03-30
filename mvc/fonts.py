@@ -1,8 +1,13 @@
-import colors
+import os
+
 import pyglet
 
+from . import base
+from . import colors
 
-pyglet.font.add_file('DSEG14Classic-Regular.ttf')
+
+DSEG14 = os.path.join(base.ASSETS, 'DSEG14Classic-Regular.ttf')
+pyglet.font.add_file(DSEG14)
 
 large = {
     'font_name': 'DSEG14 Classic',

@@ -4,11 +4,13 @@ from StringIO import StringIO
 
 import pyglet.image
 
+from . import base
 
-SPRITES_FOLDER = 'sprites'
+
+SPRITES_FOLDER = os.path.join(base.ASSETS, 'sprites')
 
 
-def _get_path(basename):
+def _get_xcf_path(basename):
     return os.path.join(SPRITES_FOLDER, basename + '.xcf')
 
 
@@ -33,19 +35,19 @@ def _read_image_layer(filepath, index):
     return pyglet.image.load(image_name, file=output)
 
 
-PLUS_IMAGE_PATH = _get_path('plus')
+PLUS_IMAGE_PATH = _get_xcf_path('plus')
 plus = {
     'black': _read_image_layer(PLUS_IMAGE_PATH, 0),
     'white': _read_image_layer(PLUS_IMAGE_PATH, 1),
 }
 
-MINUS_IMAGE_PATH = _get_path('minus')
+MINUS_IMAGE_PATH = _get_xcf_path('minus')
 minus = {
     'black': _read_image_layer(MINUS_IMAGE_PATH, 0),
     'white': _read_image_layer(MINUS_IMAGE_PATH, 1),
 }
 
-LED_IMAGE_PATH = _get_path('led')
+LED_IMAGE_PATH = _get_xcf_path('led')
 led = {
     'off':    _read_image_layer(LED_IMAGE_PATH, 0),
     'red':    _read_image_layer(LED_IMAGE_PATH, 1),
@@ -53,9 +55,11 @@ led = {
     'green':  _read_image_layer(LED_IMAGE_PATH, 3),
 }
 
-METER_TAPE_IMAGE_PATH = _get_path('meter_tape')
+METER_TAPE_IMAGE_PATH = _get_xcf_path('meter_tape')
 meter = {
     'tape':  _read_image_layer(METER_TAPE_IMAGE_PATH, 0),
     'white': _read_image_layer(METER_TAPE_IMAGE_PATH, 1),
     'black': _read_image_layer(METER_TAPE_IMAGE_PATH, 2),
 }
+BACKGROUND_IMAGE_PATH = os.path.join(base.ASSETS, 'background.png')
+background = pyglet.image.load(BACKGROUND_IMAGE_PATH)
