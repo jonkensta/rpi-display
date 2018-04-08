@@ -1,4 +1,5 @@
 import sys
+import argparse
 import threading
 from multiprocessing import sharedctypes
 
@@ -25,6 +26,13 @@ class SignalHandler:
 
 
 def main():
+    """run radio display"""
+
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    parser.add_argument('--device', default='/dev/ttyAMA0')
+    parser.add_argument('--baud', default=115200)
+    args = parser.parse_args()
+
     channel_models = sharedctypes.Array(
         models.Channel, [
             ('', 0, 0, ' ', 0, False, False, False, False, False),
@@ -52,7 +60,9 @@ def main():
     pyglet.clock.schedule_interval(update, 1.0/25)
 
     stop = threading.Event()
-    controller = controllers.KeyboardInput(channel_models, stop)
+    controller = controllers.SerialInput(
+        channel_models, stop, args.device, args.baud
+    )
     t = threading.Thread(target=controller)
     t.start()
 
