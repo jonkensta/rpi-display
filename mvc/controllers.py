@@ -189,4 +189,5 @@ class SerialInput(object):
         with serial.Serial(*self._args, **self._kwargs) as sio:
             while not self._stop.is_set():
                 input_ = sio.readline()
-                self._execute_command(input_)
+                output = self._execute_command(input_)
+                sio.write(output)
