@@ -2,6 +2,7 @@
 This software requires the following packages be installed on your RPi:
 * ratpoison
 * ImageMagick
+* python-raspberry-gpio
 * python2-pyserial
 * python2-numpy
 * python2-pyglet
@@ -44,12 +45,17 @@ fi
 * [Arch Linux Raspberry Pi Setup Guide](https://github.com/phortx/Raspberry-Pi-Setup-Guide)
 * [Arch Linux Arm: Raspberry Pi](https://archlinuxarm.org/platforms/armv6/raspberry-pi)
 
-## Login and X ##
+## Login ##
 * [Automatic Login to Virtual Console](https://wiki.archlinux.org/index.php/getty#Automatic_login_to_virtual_console)
 * [Autostart X at Login](https://wiki.archlinux.org/index.php/Xinit#Autostart_X_at_login)
-* [Starting Applications without a Window Manager](https://wiki.archlinux.org/index.php/Xinit#Starting_applications_without_a_window_manager)
+
+## Xorg ##
 * [Modifying DPSM using xset](https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling#Modifying_DPMS_and_screensaver_settings_using_xset)
 * [xbacklight](https://wiki.archlinux.org/index.php/backlight#xbacklight)
+
+## Ratpoison ##
+* [Ratpoison Colon Commands](https://www.nongnu.org/ratpoison/doc/Other-Commands.html)
+* [Ratpoison Arch Wiki](https://wiki.archlinux.org/index.php/Ratpoison)
 
 ## Serial ##
 * [RPi3 UART Configuration](https://www.raspberrypi.org/documentation/configuration/uart.md)
