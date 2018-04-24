@@ -32,7 +32,7 @@ def main():
 
     parser = argparse.ArgumentParser(description=main.__doc__)
     parser.add_argument('--device', default='/dev/ttyS0')
-    parser.add_argument('--baud', default=115200)
+    parser.add_argument('--baud', default=115200, type=int)
     args = parser.parse_args()
 
     channel_models = sharedctypes.Array(
