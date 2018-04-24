@@ -125,12 +125,13 @@ class ChannelFrequency(object):
         layout.x, layout.y = x, y
 
         self._doc = doc
+        self._batch = batch
         self._layout = layout
 
-    def __call__(self, sign, frequency):
-        sign = '!' if sign == ' ' else sign
-        frequency_text = "{:011.6f}".format(float(frequency))
-        self._doc.text = sign + frequency_text
+    def __call__(self, f):
+        s, GMMM, KKKhhh = f[0], f[1:5], f[5:12]
+        f = s + GMMM + '.' + KKKhhh
+        self._doc.text = f
         self._doc.set_style(0,  9, fonts.large)
         self._doc.set_style(9, 13, fonts.small)
 
@@ -246,7 +247,7 @@ class Channel(object):
         self._name(model.name)
         self._meter(model.meter)
         self._ctcss(model.ctcss)
-        self._freq(model.sign, model.frequency)
+        self._freq(model.frequency)
 
         self._encode_led('red' if model.encode else 'off')
         self._decode_led('green' if model.decode else 'off')

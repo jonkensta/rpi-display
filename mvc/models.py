@@ -7,8 +7,7 @@ class Channel(ctypes.Structure):
         ('name',          ctypes.c_char_p),
         ('meter',         ctypes.c_int),
         ('ctcss',         ctypes.c_double),
-        ('sign',          ctypes.c_char),
-        ('frequency',     ctypes.c_double),
+        ('frequency',     ctypes.c_char_p),
         ('encode',        ctypes.c_bool),
         ('decode',        ctypes.c_bool),
         ('decode_detect', ctypes.c_bool),
@@ -20,8 +19,7 @@ class Channel(ctypes.Structure):
         self.name = ''
         self.meter = 0
         self.ctcss = 0
-        self.sign = ' '
-        self.frequency = 0
+        self.frequency = ' GMMMKKKhhh'
         self.encode = False
         self.decode = False
         self.decode_detect = False

@@ -30,17 +30,13 @@ def build_commands(channels):
         return ['0.1', 'OK']
 
     @register_command(r'F([ +-])( [0-9]{9}|1[0-9]{9})')
-    def display_main_freq(sign, GMMMKKKhhh):
-        f = float(GMMMKKKhhh) / 1e6
-        channels[0].sign = sign
-        channels[0].frequency = f
+    def display_main_freq(sGMMMKKKhhh):
+        channels[0].frequency = sGMMMKKKhhh
         return ['OK']
 
     @register_command(r'f([ +-])( [0-9]{9}|1[0-9]{9})')
-    def display_sub_freq(sign, GMMMKKKhhh):
-        f = float(GMMMKKKhhh) / 1e6
-        channels[1].sign = sign
-        channels[1].frequency = f
+    def display_sub_freq(sGMMMKKKhhh):
+        channels[1].frequency = sGMMMKKKhhh
         return ['OK']
 
     @register_command(r'S([TR0])')

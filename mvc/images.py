@@ -37,14 +37,14 @@ def _read_image_layer(filepath, index):
 
 PLUS_IMAGE_PATH = _get_xcf_path('plus')
 plus = {
-    'black': _read_image_layer(PLUS_IMAGE_PATH, 0),
-    'white': _read_image_layer(PLUS_IMAGE_PATH, 1),
+    'white': _read_image_layer(PLUS_IMAGE_PATH, 0),
+    'black': _read_image_layer(PLUS_IMAGE_PATH, 1),
 }
 
 MINUS_IMAGE_PATH = _get_xcf_path('minus')
 minus = {
-    'black': _read_image_layer(MINUS_IMAGE_PATH, 0),
-    'white': _read_image_layer(MINUS_IMAGE_PATH, 1),
+    'white': _read_image_layer(MINUS_IMAGE_PATH, 0),
+    'black': _read_image_layer(MINUS_IMAGE_PATH, 1),
 }
 
 LED_IMAGE_PATH = _get_xcf_path('led')
