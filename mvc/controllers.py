@@ -186,4 +186,4 @@ class SerialInput(object):
             while not self._stop.is_set():
                 input_ = sio.readline()
                 output = self._execute_command(input_)
-                sio.write(output)
+                sio.write('\n'.join(output))
