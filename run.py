@@ -31,7 +31,7 @@ def main():
     """run radio display"""
 
     parser = argparse.ArgumentParser(description=main.__doc__)
-    parser.add_argument('--device', default='/dev/ttyAMA0')
+    parser.add_argument('--device', default='/dev/ttyS0')
     parser.add_argument('--baud', default=115200)
     args = parser.parse_args()
 
