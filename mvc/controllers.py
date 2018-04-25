@@ -73,7 +73,7 @@ def build_commands(channels):
 
         return ['OK']
 
-    @register_command(r'^P([f]*.?[f]*)$')
+    @register_command(r'^P([0-9]{3}.?[0-9])$')
     def display_PL_freq(format_):
         return ['OK']
 
@@ -148,8 +148,9 @@ class CommandExecutor(object):
     def __call__(self, input_):
         if input_ is None:
             self._channels[0].reset()
+            self._channels[0].timeout = True
             self._channels[1].reset()
-            return
+            self._channels[1].timeout = True
 
         match = None
         for regexp, callback in self._callbacks:
@@ -157,11 +158,18 @@ class CommandExecutor(object):
             if match is not None:
                 break
 
-        if match is not None:
-            args = match.groups()
-            return callback(*args)
-        else:
+        if match is None:
             return None
+
+        timeout = (
+            self._channels[0].timeout or
+            self._channels[1].timeout
+        )
+        if timeout:
+            return ['~LOS']
+
+        args = match.groups()
+        return callback(*args)
 
 
 class KeyboardInput(object):

@@ -108,7 +108,7 @@ class CTCSSFrequency(object):
         self._layout = layout
 
     def __call__(self, frequency):
-        self._doc.text = "{:.1f}".format(float(frequency)).rjust(5, '!')
+        self._doc.text = frequency
         self._doc.set_style(0, 5, fonts.small)
 
 
