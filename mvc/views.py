@@ -184,9 +184,13 @@ class MeterTape(object):
         g0 = pyglet.graphics.OrderedGroup(0, parent=group)
         self._bar = Sprite(bar, batch=batch, group=g0, **kwargs)
 
+        self._parent_group = group
+
         self._percent = 0.0
-        self._group = pyglet.graphics.OrderedGroup(1, parent=group)
+        g1 = pyglet.graphics.OrderedGroup(1, parent=group)
+
         self._batch = batch
+        self._mask_group = g1
         self._mask = self._build_mask()
 
         g2 = pyglet.graphics.OrderedGroup(2, parent=group)
@@ -208,7 +212,7 @@ class MeterTape(object):
 
         # background color is opposite of the bar color
         c = colors.white if self._bar_color == 'black' else colors.black
-        args = build_box(x, y, w, h, c, self._group)
+        args = build_box(x, y, w, h, c, self._mask_group)
         return self._batch.add(*args)
 
 
