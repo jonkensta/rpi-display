@@ -21,27 +21,27 @@ def build_commands(channels):
 
         return register_callback
 
-    @register_command(r'reset')
+    @register_command(r'^reset$')
     def reset():
         channels[0].reset()
         channels[1].reset()
         return ['OK']
 
-    @register_command(r'v')
+    @register_command(r'^v$')
     def version():
         return ['0.1', 'OK']
 
-    @register_command(r'F([!+-](?:![0-9]{9}|1[0-9]{9}))')
+    @register_command(r'^F([!+-](?:![0-9]{9}|1[0-9]{9}))$')
     def display_main_freq(sGMMMKKKhhh):
         channels[0].frequency = sGMMMKKKhhh
         return ['OK']
 
-    @register_command(r'f([!+-](?:![0-9]{9}|1[0-9]{9}))')
+    @register_command(r'^f([!+-](?:![0-9]{9}|1[0-9]{9}))$')
     def display_sub_freq(sGMMMKKKhhh):
         channels[1].frequency = sGMMMKKKhhh
         return ['OK']
 
-    @register_command(r'S([TR0])')
+    @register_command(r'^S([TR0])$')
     def switch_main_rxtx(tx_rx_or_none):
         if tx_rx_or_none == 'T':
             channels[0].receive = False
@@ -57,7 +57,7 @@ def build_commands(channels):
 
         return ['OK']
 
-    @register_command(r's([TR0])')
+    @register_command(r'^s([TR0])$')
     def switch_sub_rxtx(tx_rx_or_none):
         if tx_rx_or_none == 'T':
             channels[1].receive = False
@@ -73,61 +73,61 @@ def build_commands(channels):
 
         return ['OK']
 
-    @register_command(r'P([f]*.?[f]*)')
+    @register_command(r'^P([f]*.?[f]*)$')
     def display_PL_freq(format_):
         return ['OK']
 
-    @register_command(r'pE([01])')
+    @register_command(r'^pE([01])$')
     def switch_encode(on_or_off):
         channels[0].encode = bool(int(on_or_off))
         return ['OK']
 
-    @register_command(r'pD([01])')
+    @register_command(r'^pD([01])$')
     def switch_decode(on_or_off):
         channels[0].decode = bool(int(on_or_off))
         return ['OK']
 
-    @register_command(r'ps([01])')
+    @register_command(r'^ps([01])$')
     def switch_decode_detect(on_or_off):
         channels[0].decode_detect = bool(int(on_or_off))
         return ['OK']
 
-    @register_command(r'B(100|0[0-9]{2})')
+    @register_command(r'^B(100|0[0-9]{2})$')
     def display_main_bar(level):
         channels[0].meter = int(level)
         return ['OK']
 
-    @register_command(r'b(100|0[0-9]{2})')
+    @register_command(r'^b(100|0[0-9]{2})$')
     def display_sub_bar(level):
         channels[1].meter = int(level)
         return ['OK']
 
-    @register_command(r'O([01])')
+    @register_command(r'^O([01])$')
     def switch_display(on_or_off):
         return ['OK']
 
-    @register_command(r'D([LMH])')
+    @register_command(r'^D([LMH])$')
     def switch_dimness(low_med_or_high):
         return ['OK']
 
-    @register_command(r'U[01]')
+    @register_command(r'^U[01]$')
     def switch_user_led(on_or_off):
         return ['OK']
 
-    @register_command(r'i')
+    @register_command(r'^i$')
     def reset_watchdog():
         return ['OK']
 
-    @register_command(r'T')
+    @register_command(r'^T$')
     def fetch_mcu_temp():
         return ['OK']
 
-    @register_command(r'M(.*)')
+    @register_command(r'^M(.*)$')
     def display_main_msg(msg):
         channels[0].name = msg
         return ['OK']
 
-    @register_command(r'm(.*)')
+    @register_command(r'^m(.*)$')
     def display_sub_msg(msg):
         channels[1].name = msg
         return ['OK']
