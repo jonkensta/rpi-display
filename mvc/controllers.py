@@ -23,18 +23,20 @@ def build_commands(channels):
 
     @register_command(r'reset')
     def reset():
+        channels[0].reset()
+        channels[1].reset()
         return ['OK']
 
     @register_command(r'v')
     def version():
         return ['0.1', 'OK']
 
-    @register_command(r'F([ +-])( [0-9]{9}|1[0-9]{9})')
+    @register_command(r'F([!+-](?:![0-9]{9}|1[0-9]{9}))')
     def display_main_freq(sGMMMKKKhhh):
         channels[0].frequency = sGMMMKKKhhh
         return ['OK']
 
-    @register_command(r'f([ +-])( [0-9]{9}|1[0-9]{9})')
+    @register_command(r'f([!+-](?:![0-9]{9}|1[0-9]{9}))')
     def display_sub_freq(sGMMMKKKhhh):
         channels[1].frequency = sGMMMKKKhhh
         return ['OK']
@@ -158,6 +160,8 @@ class CommandExecutor(object):
         if match is not None:
             args = match.groups()
             return callback(*args)
+        else:
+            return None
 
 
 class KeyboardInput(object):
@@ -170,20 +174,29 @@ class KeyboardInput(object):
         while not self._stop.is_set():
             input_ = raw_input()  # noqa
             output = self._execute_command(input_)
-            print('\n'.join(output))
+            if output is not None:
+                output = '\n'.join(output)
+                print(output)
 
 
 class SerialInput(object):
 
-    def __init__(self, channels, stop, *args, **kwargs):
+    def __init__(self, channels, stop, **kwargs):
         self._stop = stop
         self._execute_command = CommandExecutor(channels)
-        self._args = args
-        self._kwargs = kwargs
+        self._serial_kwargs = kwargs
 
     def __call__(self):
-        with serial.Serial(*self._args, **self._kwargs) as sio:
+        with serial.Serial(**self._serial_kwargs) as sio:
             while not self._stop.is_set():
                 input_ = sio.readline()
+
+                if input_.endswith('\n'):
+                    input_ = input_.strip('\n')
+                else:
+                    input_ = None
+
                 output = self._execute_command(input_)
-                sio.write('\n'.join(output))
+                if output is not None:
+                    output = '\n'.join(output) + '\n'
+                    sio.write(output)

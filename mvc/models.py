@@ -19,7 +19,7 @@ class Channel(ctypes.Structure):
         self.name = ''
         self.meter = 0
         self.ctcss = 0
-        self.frequency = ' GMMMKKKhhh'
+        self.frequency = '!GMMMKKKhhh'
         self.encode = False
         self.decode = False
         self.decode_detect = False

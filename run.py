@@ -33,11 +33,12 @@ def main():
     parser = argparse.ArgumentParser(description=main.__doc__)
     parser.add_argument('--device', default='/dev/ttyS0')
     parser.add_argument('--baud', default=115200, type=int)
+    parser.add_argument('--timeout', default=10, type=float)
     args = parser.parse_args()
 
     channel_models = sharedctypes.Array(
         models.Channel, [
-            ('', 0, 0, '+GMMMKKKhhh', False, False, False, False, False),
+            ('', 0, 0, '!GMMMKKKhhh', False, False, False, False, False),
             ('', 0, 0, '!GMMMKKKhhh', False, False, False, False, False),
         ],
         lock=True
@@ -63,7 +64,8 @@ def main():
 
     stop = threading.Event()
     controller = controllers.SerialInput(
-        channel_models, stop, args.device, args.baud
+        channel_models, stop,
+        port=args.device, baudrate=args.baud, timeout=args.timeout
     )
     t = threading.Thread(target=controller)
     t.start()
