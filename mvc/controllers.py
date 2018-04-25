@@ -151,6 +151,7 @@ class CommandExecutor(object):
             self._channels[0].timeout = True
             self._channels[1].reset()
             self._channels[1].timeout = True
+            return None
 
         match = None
         for regexp, callback in self._callbacks:
@@ -161,15 +162,17 @@ class CommandExecutor(object):
         if match is None:
             return None
 
+        args = match.groups()
+        output = callback(*args)
+
         timeout = (
             self._channels[0].timeout or
             self._channels[1].timeout
         )
         if timeout:
             return ['~LOS']
-
-        args = match.groups()
-        return callback(*args)
+        else:
+            return output
 
 
 class KeyboardInput(object):
