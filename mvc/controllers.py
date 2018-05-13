@@ -1,8 +1,19 @@
 from __future__ import division, print_function
 
 import re
+import subprocess
 
 import serial
+
+
+git_describe_cmd = ['git', 'describe', '--long', '--tags']
+
+try:
+    git_describe = subprocess.check_output(git_describe_cmd)
+except subprocess.CalledProcessError:
+    git_describe = 'unavailable'
+else:
+    git_describe = git_describe.strip()
 
 
 class QuitException(Exception):
@@ -42,7 +53,7 @@ def build_commands(channels):
 
     @register_command(r'^v$')
     def version():
-        return ['0.1', 'OK']
+        return [git_describe, 'OK']
 
     @register_command(r'^F([!+-](?:![0-9]{9}|1[0-9]{9}))$')
     def display_main_freq(sGMMMKKKhhh):
