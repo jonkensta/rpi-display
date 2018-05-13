@@ -98,12 +98,12 @@ def build_commands(channels):
 
         return ['OK']
 
-    @register_command(r'^P([0-9]{3}.?[0-9])$')
+    @register_command(r'^P([0-9]{3}(?:[0-9]|[.][0-9]))$')
     def display_main_PL_freq(freq):
         channels[0].ctcss = freq
         return ['OK']
 
-    @register_command(r'^P([0-9]{3}.?[0-9])$')
+    @register_command(r'^Q([0-9]{3}(?:[0-9]|[.][0-9]))$')
     def display_sub_PL_freq(freq):
         channels[1].ctcss = freq
         return ['OK']
