@@ -2,11 +2,12 @@ from __future__ import division, print_function
 
 import re
 import subprocess
+from os.path import dirname, abspath
 
 import serial
 
 
-git_fullpath = '/home/jstarr/rpi-display'
+git_fullpath = abspath(dirname(__file__))
 git_describe_cmd = ['/usr/bin/git', 'describe', '--long', '--tags']
 
 try:
