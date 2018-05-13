@@ -16,7 +16,20 @@ def build_commands(channels):
         regexp = re.compile(regexp)
 
         def register_callback(callback):
-            callbacks.append((regexp, callback))
+            def inner(*args, **kwargs):
+                if callback.__name__ == 'reset':
+                    return callback(*args, **kwargs)
+
+                timeout = (
+                    channels[0].timeout or
+                    channels[1].timeout
+                )
+                if not timeout:
+                    return callback(*args, **kwargs)
+                else:
+                    return ['~LOS']
+
+            callbacks.append((regexp, inner))
             return callback
 
         return register_callback
@@ -163,16 +176,7 @@ class CommandExecutor(object):
             return None
 
         args = match.groups()
-        output = callback(*args)
-
-        timeout = (
-            self._channels[0].timeout or
-            self._channels[1].timeout
-        )
-        if timeout:
-            return ['~LOS']
-        else:
-            return output
+        return callback(*args)
 
 
 class KeyboardInput(object):
