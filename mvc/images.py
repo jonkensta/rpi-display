@@ -35,18 +35,6 @@ def _read_image_layer(filepath, index):
     return pyglet.image.load(image_name, file=output)
 
 
-PLUS_IMAGE_PATH = _get_xcf_path('plus')
-plus = {
-    'white': _read_image_layer(PLUS_IMAGE_PATH, 0),
-    'black': _read_image_layer(PLUS_IMAGE_PATH, 1),
-}
-
-MINUS_IMAGE_PATH = _get_xcf_path('minus')
-minus = {
-    'white': _read_image_layer(MINUS_IMAGE_PATH, 0),
-    'black': _read_image_layer(MINUS_IMAGE_PATH, 1),
-}
-
 LED_IMAGE_PATH = _get_xcf_path('led')
 led = {
     'off':    _read_image_layer(LED_IMAGE_PATH, 0),
