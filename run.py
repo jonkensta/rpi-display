@@ -31,9 +31,14 @@ def main():
     """run radio display"""
 
     parser = argparse.ArgumentParser(description=main.__doc__)
-    parser.add_argument('--device', default='/dev/ttyS0')
-    parser.add_argument('--baud', default=115200, type=int)
-    parser.add_argument('--timeout', default=10, type=float)
+    subparsers = parser.add_subparsers(dest='subparser')
+
+    serial_parser = subparsers.add_parser('serial')
+    serial_parser.add_argument('--device',  default='/dev/ttyS0')
+    serial_parser.add_argument('--timeout', default=10,     type=float)
+    serial_parser.add_argument('--baud',    default=115200, type=int)
+
+    subparsers.add_parser('keyboard')
     args = parser.parse_args()
 
     channel_models = sharedctypes.Array(
@@ -63,10 +68,15 @@ def main():
     pyglet.clock.schedule_interval(update, 1.0/25)
 
     stop = threading.Event()
-    controller = controllers.SerialInput(
-        channel_models, stop,
-        port=args.device, baudrate=args.baud, timeout=args.timeout
-    )
+    if args.subparser == 'keyboard':
+        controller = controllers.KeyboardInput(
+            channel_models, stop
+        )
+    else:
+        controller = controllers.SerialInput(
+            channel_models, stop,
+            port=args.device, baudrate=args.baud, timeout=args.timeout
+        )
     t = threading.Thread(target=controller)
     t.start()
 
