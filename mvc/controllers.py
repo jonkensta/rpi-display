@@ -98,7 +98,13 @@ def build_commands(channels):
         return ['OK']
 
     @register_command(r'^P([0-9]{3}.?[0-9])$')
-    def display_PL_freq(format_):
+    def display_main_PL_freq(freq):
+        channels[0].ctcss = freq
+        return ['OK']
+
+    @register_command(r'^P([0-9]{3}.?[0-9])$')
+    def display_sub_PL_freq(freq):
+        channels[1].ctcss = freq
         return ['OK']
 
     @register_command(r'^pE([01])$')
