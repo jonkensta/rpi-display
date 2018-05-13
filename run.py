@@ -12,21 +12,6 @@ from mvc import models
 from mvc import controllers
 
 
-class SignalHandler:
-
-    def __init__(self, stopper, workers):
-        self.stopper = stopper
-        self.workers = workers
-
-    def __call__(self, signum, frame):
-        self.stopper.set()
-
-        for worker in self.workers:
-            worker.join()
-
-        sys.exit(0)
-
-
 def main():
     """run radio display"""
 
@@ -66,8 +51,8 @@ def main():
             view.scroll()
 
     pyglet.clock.schedule_interval(update, 1.0/25)
-
     stop = threading.Event()
+
     if args.subparser == 'keyboard':
         controller = controllers.KeyboardInput(
             channel_models, stop
@@ -77,6 +62,7 @@ def main():
             channel_models, stop,
             port=args.device, baudrate=args.baud, timeout=args.timeout
         )
+
     t = threading.Thread(target=controller)
     t.start()
 
