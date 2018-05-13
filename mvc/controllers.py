@@ -6,10 +6,11 @@ import subprocess
 import serial
 
 
-git_describe_cmd = ['git', 'describe', '--long', '--tags']
+git_fullpath = '/home/jstarr/rpi-display'
+git_describe_cmd = ['/usr/bin/git', 'describe', '--long', '--tags']
 
 try:
-    git_describe = subprocess.check_output(git_describe_cmd)
+    git_describe = subprocess.check_output(git_describe_cmd, cwd=git_fullpath)
 except subprocess.CalledProcessError:
     git_describe = 'unavailable'
 else:
