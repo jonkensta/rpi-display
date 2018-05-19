@@ -49,5 +49,8 @@ meter = {
     'white': _read_image_layer(METER_TAPE_IMAGE_PATH, 1),
     'black': _read_image_layer(METER_TAPE_IMAGE_PATH, 2),
 }
-BACKGROUND_IMAGE_PATH = os.path.join(base.ASSETS, 'background.png')
-background = pyglet.image.load(BACKGROUND_IMAGE_PATH)
+BACKGROUND_IMAGE_PATH = os.path.join(base.ASSETS, 'background.xcf')
+background = {
+    'black': _read_image_layer(BACKGROUND_IMAGE_PATH, 0),
+    'white': _read_image_layer(BACKGROUND_IMAGE_PATH, 1),
+}

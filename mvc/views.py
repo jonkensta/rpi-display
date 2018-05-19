@@ -50,11 +50,13 @@ class ChannelName(object):
         y = float(kwargs.pop('y', 0))
         w = float(kwargs.pop('w', 300))
         rate = float(kwargs.pop('rate', 1))
+        color = kwargs.pop('color', 'black').lower()
 
         doc = pyglet.text.document.UnformattedDocument()
         doc.text = '-'
 
-        h = pyglet.text.Label(" ", **fonts.small).content_height
+        font = fonts.small[color]
+        h = pyglet.text.Label(" ", **font).content_height
 
         Layout = pyglet.text.layout.ScrollableTextLayout
         layout = Layout(doc, w, h, batch=batch, **kwargs)
@@ -62,6 +64,7 @@ class ChannelName(object):
         layout.x, layout.y = x, y
 
         self._doc = doc
+        self._font = font
         self._layout = layout
         self._name = '--------'
 
@@ -73,7 +76,7 @@ class ChannelName(object):
     def __call__(self, name):
         self._name = str(name)
         self._doc.text = self._name
-        cw = content_width(self._name, **fonts.small)
+        cw = content_width(self._name, **self._font)
 
         if cw <= self._w:
             self._doc.text = self._name
@@ -81,11 +84,11 @@ class ChannelName(object):
 
         else:
             self._doc.text = ' ' + self._name + ' '
-            cw = content_width(self._doc.text, **fonts.small)
+            cw = content_width(self._doc.text, **self._font)
             self._scroll_w = cw
             self._doc.text *= 2
 
-        self._doc.set_style(0, len(self._doc.text), fonts.small)
+        self._doc.set_style(0, len(self._doc.text), self._font)
 
     def scroll(self):
         self._layout.view_x += self._rate
@@ -97,9 +100,11 @@ class CTCSSFrequency(object):
     def __init__(self, batch, **kwargs):
         x = float(kwargs.pop('x', 0))
         y = float(kwargs.pop('y', 0))
-        doc = pyglet.text.document.FormattedDocument()
+        color = kwargs.pop('color', 'black').lower()
+        self._font = fonts.small[color]
 
         Layout = pyglet.text.layout.TextLayout
+        doc = pyglet.text.document.FormattedDocument()
         layout = Layout(doc, batch=batch, **kwargs)
         layout.wrap_lines = False
         layout.x, layout.y = x, y
@@ -109,7 +114,7 @@ class CTCSSFrequency(object):
 
     def __call__(self, frequency):
         self._doc.text = frequency
-        self._doc.set_style(0, 5, fonts.small)
+        self._doc.set_style(0, 5, self._font)
 
 
 class ChannelFrequency(object):
@@ -118,6 +123,7 @@ class ChannelFrequency(object):
         x = float(kwargs.pop('x', 0))
         y = float(kwargs.pop('y', 0))
         doc = pyglet.text.document.FormattedDocument()
+        color = kwargs.pop('color', 'black').lower()
 
         Layout = pyglet.text.layout.TextLayout
         layout = Layout(doc, batch=batch, **kwargs)
@@ -127,13 +133,15 @@ class ChannelFrequency(object):
         self._doc = doc
         self._batch = batch
         self._layout = layout
+        self._small_font = fonts.small[color]
+        self._large_font = fonts.large[color]
 
     def __call__(self, f):
         s, GMMM, KKKhhh = f[0], f[1:5], f[5:12]
         f = s + GMMM + '.' + KKKhhh
         self._doc.text = f
-        self._doc.set_style(0,  9, fonts.large)
-        self._doc.set_style(9, 13, fonts.small)
+        self._doc.set_style(0,  9, self._large_font)
+        self._doc.set_style(9, 13, self._small_font)
 
 
 class LED(object):
@@ -218,26 +226,35 @@ class MeterTape(object):
 
 class Channel(object):
 
-    def __init__(self, batch, x=0, y=0, w=425, group=None):
+    def __init__(self, batch, x=0, y=0, w=425, group=None, color='black'):
         x, y = float(x), float(y)
 
-        self._name = ChannelName(batch, x=x+5, y=y+125, w=w, group=group)
-        self._freq = ChannelFrequency(batch, x=x, y=y+65, group=group)
-        self._ctcss = CTCSSFrequency(batch, x=x, y=y+25, group=group)
-        self._meter = MeterTape(batch, x=x+175, y=y+25, group=group)
+        self._name = ChannelName(
+            batch, x=x+5, y=y+125, w=w, group=group, color=color
+        )
+        self._freq = ChannelFrequency(
+            batch, x=x, y=y+65, group=group, color=color
+        )
+        self._ctcss = CTCSSFrequency(
+            batch, x=x, y=y+25, group=group, color=color
+        )
+        self._meter = MeterTape(
+            batch, x=x+175, y=y+25, group=group, color=color
+        )
 
+        font = fonts.small[color]
         self._tx_led = LED(batch, x=x+400, y=y+95, color='off', group=group)
         tx_label = pyglet.text.Label(
             'T', x=x+425, y=y+100,
             batch=batch, anchor_y='center', group=group,
-            **fonts.small
+            **font
         )
 
         self._rx_led = LED(batch, x=x+400, y=y+65, color='off', group=group)
         rx_label = pyglet.text.Label(
             'R', x=x+425, y=y+70,
             batch=batch, anchor_y='center', group=group,
-            **fonts.small
+            **font
         )
 
         # Encode/Decode/(Decode detect) leds
@@ -264,7 +281,7 @@ class Channel(object):
         self._name.scroll()
 
 
-def build():
+def build(color='black'):
     batch = pyglet.graphics.Batch()
 
     groups = (
@@ -274,12 +291,12 @@ def build():
     )
 
     bg = pyglet.sprite.Sprite(
-        images.background, group=groups[0], batch=batch
+        images.background[color], group=groups[0], batch=batch
     )
 
     channels = (
-        Channel(batch, x=5, y=0,   group=groups[1]),
-        Channel(batch, x=5, y=150, group=groups[2]),
+        Channel(batch, x=5, y=0,   group=groups[1], color=color),
+        Channel(batch, x=5, y=150, group=groups[2], color=color),
     )
 
     return channels, bg, batch
