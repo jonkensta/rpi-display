@@ -16,6 +16,7 @@ def main():
     """run radio display"""
 
     parser = argparse.ArgumentParser(description=main.__doc__)
+    parser.add_argument('--color', default='black')
     subparsers = parser.add_subparsers(dest='subparser')
 
     serial_parser = subparsers.add_parser('serial')
@@ -36,7 +37,7 @@ def main():
 
     width, height = 480, 320
     window = pyglet.window.Window(width=width, height=height)
-    channel_views, bg, batch = views.build()
+    channel_views, bg, batch = views.build(color=args.color)
 
     @window.event
     def on_draw():
